@@ -1,0 +1,178 @@
+ 
+<aside class="main-sidebar" id="sidebar-menu-container">
+    <nav class="sidebar-nav">
+        <ul id="sidebar-menu">
+            <!-- Sidebar links will be dynamically loaded here by JavaScript -->
+            <li class="loading-sidebar"><i class="fas fa-spinner fa-spin"></i> Loading menu...</li>
+        </ul>
+    </nav>
+</aside>
+
+<script>
+    // This script block is specific to the sidebar partial to dynamically generate menu items.
+    // It runs only when the sidebar partial is loaded into the DOM.
+    document.addEventListener('DOMContentLoaded', () => {
+        const sidebarMenu = document.getElementById('sidebar-menu');
+        const token = localStorage.getItem('token');
+        let userRole = null;
+
+        if (token) {
+            const decodedToken = decodeJwt(token); // `decodeJwt` is from main.js
+            if (decodedToken) {
+                userRole = decodedToken.role;
+            } else {
+                console.error("Invalid token found in localStorage for sidebar. Cannot determine role.");
+            }
+        }
+
+        sidebarMenu.innerHTML = ''; // Clear loading message
+
+        if (userRole) {
+            let menuItems = [];
+
+            if (userRole === 'admin') {
+                menuItems = [
+                    { name: 'Dashboard', href: '/admin/dashboard.html', icon: 'fas fa-chart-line' },
+                    { name: 'Organizers', href: '/admin/organizers.html', icon: 'fas fa-users' },
+                    { name: 'Vendors', href: '/admin/vendors.html', icon: 'fas fa-store' },
+                    { name: 'Events', href: '/admin/events.html', icon: 'fas fa-calendar-alt' }
+                ];
+            } else if (userRole === 'organizer') {
+                menuItems = [
+                    { name: 'Dashboard', href: '/organizer/dashboard.html', icon: 'fas fa-tachometer-alt' },
+                    { name: 'My Events', href: '/organizer/events.html', icon: 'fas fa-calendar-plus' },
+                    { name: 'Find Vendors', href: '/organizer/vendors.html', icon: 'fas fa-search' },
+                    { name: 'Messages', href: '/organizer/messages.html', icon: 'fas fa-comments' }
+                ];
+            } else if (userRole === 'vendor') {
+                menuItems = [
+                    { name: 'Dashboard', href: '/vendor/dashboard.html', icon: 'fas fa-store' },
+                    { name: 'My Profile', href: '/vendor/profile.html', icon: 'fas fa-id-card' },
+                    { name: 'Messages', href: '/vendor/messages.html', icon: 'fas fa-comments' }
+                ];
+            }
+
+            menuItems.forEach(item => {
+                const listItem = document.createElement('li');
+                const link = document.createElement('a');
+                link.href = item.href;
+                link.innerHTML = `<i class="${item.icon}"></i> <span>${item.name}</span>`;
+
+                // Logic to set active class is in main.js's loadPartial for consistency
+                // The main.js `loadPartial` already handles checking current path and setting 'active' class.
+
+                listItem.appendChild(link);
+                sidebarMenu.appendChild(listItem);
+            });
+        } else {
+            sidebarMenu.innerHTML = '<li class="error-sidebar">Cannot load menu. Please login.</li>';
+        }
+    });
+</script>
+
+<style>
+    /* Sidebar specific styles (can be moved to style.css or a dedicated partials.css) */
+    .main-sidebar {
+        width: var(--sidebar-width); /* Defined in style.css */
+        background-color: var(--sidebar-bg-color); /* Defined in style.css */
+        color: var(--sidebar-text-color); /* Defined in style.css */
+        padding-top: 20px;
+        flex-shrink: 0; /* Prevent shrinking */
+        box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+        overflow-y: auto; /* Enable scrolling if content exceeds height */
+        position: sticky; /* Keep sidebar visible on scroll */
+        top: var(--navbar-height); /* Position below navbar */
+        height: calc(100vh - var(--navbar-height)); /* Fill remaining viewport height */
+    }
+
+    .sidebar-nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .sidebar-nav ul li a {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        color: var(--sidebar-text-color);
+        text-decoration: none;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        font-size: 1.05em;
+    }
+
+    .sidebar-nav ul li a i {
+        margin-right: 15px;
+        font-size: 1.2em;
+        width: 20px; /* Standardize icon width */
+        text-align: center;
+    }
+
+    .sidebar-nav ul li a:hover,
+    .sidebar-nav ul li a.active {
+        background-color: var(--sidebar-active-bg-color); /* Defined in style.css */
+        color: var(--sidebar-active-text-color); /* Defined in style.css */
+        border-left: 4px solid var(--primary-color);
+        padding-left: 16px; /* Adjust padding due to border */
+    }
+
+    .loading-sidebar, .error-sidebar {
+        padding: 20px;
+        text-align: center;
+        color: var(--text-color-secondary);
+        font-size: 0.9em;
+    }
+    .loading-sidebar i {
+        margin-right: 10px;
+    }
+
+    /* Responsive adjustments for sidebar */
+    @media (max-width: 992px) {
+        .main-sidebar {
+            width: 100%;
+            height: auto;
+            position: static;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: none;
+        }
+        .sidebar-nav ul {
+            display: flex; /* Make menu items horizontal */
+            overflow-x: auto; /* Allow horizontal scrolling if many items */
+            padding-bottom: 10px; /* Space for scrollbar */
+            scroll-behavior: smooth;
+        }
+        .sidebar-nav ul li {
+            flex-shrink: 0; /* Prevent items from shrinking */
+        }
+        .sidebar-nav ul li a {
+            padding: 10px 15px;
+            border-left: none;
+            border-bottom: 3px solid transparent; /* For active indicator */
+        }
+        .sidebar-nav ul li a i {
+            margin-right: 8px;
+            font-size: 1em;
+        }
+        .sidebar-nav ul li a.active {
+            border-left: none;
+            border-bottom: 3px solid var(--primary-color);
+            padding-left: 15px;
+        }
+    }
+    @media (max-width: 768px) {
+        /* Hide text on smaller screens, just show icons */
+        .main-sidebar .sidebar-nav ul li a span {
+            display: none;
+        }
+        .main-sidebar .sidebar-nav ul li a i {
+            margin-right: 0; /* No space if text is hidden */
+        }
+        .main-sidebar .sidebar-nav ul li a {
+            justify-content: center; /* Center icons */
+            padding: 10px;
+        }
+        .main-sidebar {
+            padding-top: 10px;
+        }
+    }
+</style>

@@ -1,0 +1,9 @@
+event_type,event_name,base_per_guest,venue_percentage,catering_percentage,decor_percentage,music_percentage,photography_percentage,other_percentage,min_guests,max_guests,avg_guests,description
+wedding,Wedding,150,0.15,0.35,0.15,0.1,0.15,0.1,50,500,150,Traditional wedding ceremony and reception
+birthday,Birthday Party,45,0.2,0.35,0.2,0.1,0.1,0.05,20,200,50,Birthday celebration party
+corporate,Corporate Event,80,0.25,0.3,0.1,0.05,0.15,0.15,30,300,100,Professional corporate gathering
+anniversary,Anniversary,60,0.18,0.35,0.18,0.12,0.12,0.05,30,150,75,Wedding anniversary celebration
+conference,Conference,100,0.3,0.25,0.08,0.07,0.15,0.15,50,500,200,Business conference or seminar
+graduation,Graduation Party,40,0.2,0.4,0.15,0.1,0.1,0.05,30,150,60,Graduation celebration
+baby_shower,Baby Shower,35,0.15,0.4,0.25,0.05,0.1,0.05,15,80,40,Baby shower celebration
+engagement,Engagement Party,55,0.18,0.35,0.18,0.12,0.12,0.05,30,120,60,Engagement announcement party

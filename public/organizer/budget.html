@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Budget Predictor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Mild yellow, black, and white color palette */
+            --primary-yellow: #F6E58D;
+            --dark-yellow: #d8ba4c;
+            --darker-yellow: #ddc269;
+            --black: #000000;
+            --white: #FFFFFF;
+            --light-gray: #F5F5F5;
+            --medium-gray: #DDDDDD;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--black);
+            background-color: var(--light-gray);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px var(--shadow);
+            border: 1px solid var(--medium-gray);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: var(--primary-yellow);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--black);
+            margin-bottom: 40px;
+            text-align: center;
+            font-size: 3.5em;
+            font-weight: 700;
+            position: relative;
+        }
+
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background-color: var(--dark-yellow);
+        }
+
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            color: var(--black);
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+
+        select, input[type="number"] {
+            padding: 15px 20px;
+            border: 2px solid var(--medium-gray);
+            border-radius: 15px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            background: var(--white);
+            color: var(--black);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        select:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: var(--dark-yellow);
+            box-shadow: 0 0 0 4px rgba(249, 202, 36, 0.2);
+        }
+
+        .slider-container {
+            margin-top: 15px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: var(--medium-gray);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--dark-yellow);
+            cursor: pointer;
+            box-shadow: 0 4px 8px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: var(--darker-yellow);
+            transform: scale(1.1);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--dark-yellow);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 8px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            background: var(--darker-yellow);
+            transform: scale(1.1);
+        }
+
+        .guest-display {
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--darker-yellow);
+            margin-top: 15px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .calculate-btn {
+            background: var(--dark-yellow);
+            color: var(--black);
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 30px;
+            font-family: 'Montserrat', sans-serif;
+            box-shadow: 0 8px 20px rgba(249, 202, 36, 0.3);
+        }
+
+        .calculate-btn:hover {
+            background: var(--darker-yellow);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(249, 202, 36, 0.4);
+        }
+
+        .result-section {
+            display: none;
+        }
+
+        .result-section.active {
+            display: block;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .total-budget {
+            background: linear-gradient(135deg, var(--primary-yellow) 0%, var(--dark-yellow) 100%);
+            color: var(--black);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .total-budget::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg"><path fill="%23FFFFFF" d="M0,64L48,80C96,96,192,128,288,128C384,128,480,96,576,85.3C672,75,768,85,864,90.7C960,96,1056,96,1152,90.7C1248,85,1344,75,1392,69.3L1440,64L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>') no-repeat;
+            background-size: cover;
+            opacity: 0.2;
+        }
+
+        .total-budget h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .total-budget .amount {
+            font-family: 'Playfair Display', serif;
+            font-size: 4em;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
+
+        .total-budget .note {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1em;
+            opacity: 0.8;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .breakdown-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .category-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px var(--shadow);
+            border: 1px solid var(--medium-gray);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: var(--primary-yellow);
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .category-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            background: var(--primary-yellow);
+            color: var(--black);
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover .category-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: var(--dark-yellow);
+        }
+
+        .category-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            color: var(--black);
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .category-amount {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--darker-yellow);
+            margin-bottom: 10px;
+        }
+
+        .category-percentage {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1em;
+            color: var(--black);
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .input-section {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.5em;
+            }
+            
+            .total-budget .amount {
+                font-size: 3em;
+            }
+            
+            .breakdown-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1><i class="fas fa-calculator" style="color: var(--dark-yellow); margin-right: 15px;"></i>Event Budget Predictor</h1>
+            
+            <div class="input-section">
+                <div class="form-group">
+                    <label for="eventType">Event Type</label>
+                    <select id="eventType">
+                        <option value="">Select Event Type</option>
+                        <option value="wedding">Wedding</option>
+                        <option value="birthday">Birthday Party</option>
+                        <option value="corporate">Corporate Event</option>
+                        <option value="anniversary">Anniversary</option>
+                        <option value="conference">Conference</option>
+                        <option value="graduation">Graduation Party</option>
+                        <option value="baby_shower">Baby Shower</option>
+                        <option value="engagement">Engagement Party</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="guestCount">Number of Guests: <span id="guestValue">100</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="guestCount" min="10" max="500" value="100" step="10">
+                    </div>
+                    <div class="guest-display" id="guestDisplay">100 Guests</div>
+                </div>
+            </div>
+            
+            <button class="calculate-btn" onclick="calculateBudget()">
+                <i class="fas fa-chart-pie" style="margin-right: 10px;"></i>Calculate Budget
+            </button>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="card">
+                <div class="total-budget">
+                    <h2>Estimated Total Budget</h2>
+                    <div class="amount" id="totalAmount">$0</div>
+                    <div class="note">*This is an estimate based on average prices</div>
+                </div>
+
+                <h3 style="margin-bottom: 30px; color: var(--black); font-family: 'Playfair Display', serif; font-size: 2.2em; text-align: center;">Estimated Cost Breakdown</h3>
+                <div class="breakdown-grid" id="breakdownGrid">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Synthetic dataset for budget prediction
+        const budgetData = {
+            wedding: {
+                basePerGuest: 150,
+                venue: 0.15,
+                catering: 0.35,
+                decor: 0.15,
+                music: 0.10,
+                photography: 0.15,
+                other: 0.10
+            },
+            birthday: {
+                basePerGuest: 45,
+                venue: 0.20,
+                catering: 0.35,
+                decor: 0.20,
+                music: 0.10,
+                photography: 0.10,
+                other: 0.05
+            },
+            corporate: {
+                basePerGuest: 80,
+                venue: 0.25,
+                catering: 0.30,
+                decor: 0.10,
+                music: 0.05,
+                photography: 0.15,
+                other: 0.15
+            },
+            anniversary: {
+                basePerGuest: 60,
+                venue: 0.18,
+                catering: 0.35,
+                decor: 0.18,
+                music: 0.12,
+                photography: 0.12,
+                other: 0.05
+            },
+            conference: {
+                basePerGuest: 100,
+                venue: 0.30,
+                catering: 0.25,
+                decor: 0.08,
+                music: 0.07,
+                photography: 0.15,
+                other: 0.15
+            },
+            graduation: {
+                basePerGuest: 40,
+                venue: 0.20,
+                catering: 0.40,
+                decor: 0.15,
+                music: 0.10,
+                photography: 0.10,
+                other: 0.05
+            },
+            baby_shower: {
+                basePerGuest: 35,
+                venue: 0.15,
+                catering: 0.40,
+                decor: 0.25,
+                music: 0.05,
+                photography: 0.10,
+                other: 0.05
+            },
+            engagement: {
+                basePerGuest: 55,
+                venue: 0.18,
+                catering: 0.35,
+                decor: 0.18,
+                music: 0.12,
+                photography: 0.12,
+                other: 0.05
+            }
+        };
+
+        const categoryDetails = {
+            venue: {
+                name: 'Venue',
+                icon: '🏛️',
+                color: '#FF6B6B'
+            },
+            catering: {
+                name: 'Catering',
+                icon: '🍽️',
+                color: '#4ECDC4'
+            },
+            decor: {
+                name: 'Decor',
+                icon: '🎨',
+                color: '#FFE66D'
+            },
+            music: {
+                name: 'Music',
+                icon: '🎵',
+                color: '#95E1D3'
+            },
+            photography: {
+                name: 'Photography',
+                icon: '📸',
+                color: '#F38181'
+            },
+            other: {
+                name: 'Other',
+                icon: '✨',
+                color: '#AA96DA'
+            }
+        };
+
+        // Update guest count display
+        document.getElementById('guestCount').addEventListener('input', function(e) {
+            const value = e.target.value;
+            document.getElementById('guestValue').textContent = value;
+            document.getElementById('guestDisplay').textContent = value + ' Guests';
+        });
+
+        function calculateBudget() {
+            const eventType = document.getElementById('eventType').value;
+            const guestCount = parseInt(document.getElementById('guestCount').value);
+
+            if (!eventType) {
+                // Create a custom notification instead of alert
+                showNotification('Please select an event type', 'error');
+                return;
+            }
+
+            const eventData = budgetData[eventType];
+            const totalBudget = eventData.basePerGuest * guestCount;
+
+            // Calculate breakdown
+            const breakdown = {
+                venue: totalBudget * eventData.venue,
+                catering: totalBudget * eventData.catering,
+                decor: totalBudget * eventData.decor,
+                music: totalBudget * eventData.music,
+                photography: totalBudget * eventData.photography,
+                other: totalBudget * eventData.other
+            };
+
+            // Display results
+            displayResults(totalBudget, breakdown);
+        }
+
+        function displayResults(total, breakdown) {
+            // Show result section
+            document.getElementById('resultSection').classList.add('active');
+
+            // Display total
+            document.getElementById('totalAmount').textContent = 
+                '$' + total.toLocaleString('en-US', {maximumFractionDigits: 0});
+
+            // Display breakdown
+            const breakdownGrid = document.getElementById('breakdownGrid');
+            breakdownGrid.innerHTML = '';
+
+            Object.keys(breakdown).forEach(category => {
+                const amount = breakdown[category];
+                const percentage = ((amount / total) * 100).toFixed(0);
+                const details = categoryDetails[category];
+
+                const card = document.createElement('div');
+                card.className = 'category-card';
+                card.innerHTML = `
+                    <div class="category-icon">
+                        ${details.icon}
+                    </div>
+                    <div class="category-name">${details.name}</div>
+                    <div class="category-amount">$${amount.toLocaleString('en-US', {maximumFractionDigits: 0})}</div>
+                    <div class="category-percentage">${percentage}% of total</div>
+                `;
+                breakdownGrid.appendChild(card);
+            });
+
+            // Smooth scroll to results
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.padding = '15px 25px';
+            notification.style.backgroundColor = type === 'error' ? '#f8d7da' : '#d4edda';
+            notification.style.color = type === 'error' ? '#721c24' : '#155724';
+            notification.style.borderRadius = '10px';
+            notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            notification.style.zIndex = '1000';
+            notification.style.fontFamily = 'Montserrat, sans-serif';
+            notification.style.fontSize = '1.1em';
+            notification.style.transition = 'all 0.3s ease';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+                notification.style.opacity = '1';
+            }, 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(120%)';
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

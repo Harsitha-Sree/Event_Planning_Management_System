@@ -1,0 +1,65 @@
+ 
+<footer class="main-footer">
+    <div class="container">
+        <p>&copy; <span id="current-year"></span> Event Planner & Management System. All rights reserved.</p>
+        <nav class="footer-nav">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Support</a>
+        </nav>
+    </div>
+</footer>
+
+<script>
+    // This script block is specific to the footer partial to dynamically update the year.
+    // It runs only when the footer partial is loaded into the DOM.
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+</script>
+
+<style>
+    /* Footer specific styles (can be moved to style.css or a dedicated partials.css for better organization) */
+    .main-footer {
+        background-color: var(--footer-bg-color); /* Defined in style.css */
+        color: var(--footer-text-color); /* Defined in style.css */
+        padding: 20px 0;
+        text-align: center;
+        width: 100%;
+        box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+        margin-top: auto; /* Pushes footer to bottom in a flex column layout */
+    }
+
+    .main-footer .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .main-footer p {
+        margin: 0;
+        font-size: 0.9em;
+    }
+
+    .footer-nav a {
+        color: var(--footer-text-color);
+        text-decoration: none;
+        margin: 0 10px;
+        font-size: 0.9em;
+        transition: color 0.3s ease;
+    }
+
+    .footer-nav a:hover {
+        color: var(--primary-color); /* Assuming primary-color is also accessible here */
+        text-decoration: underline;
+    }
+
+    @media (min-width: 768px) {
+        .main-footer .container {
+            flex-direction: row;
+            justify-content: space-between;
+        }
+    }
+</style>

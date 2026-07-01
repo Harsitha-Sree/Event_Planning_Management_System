@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Planner - Navbar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #F6C524; /* Bright gold/yellow */
+            --secondary-color: #DBD2B7; /* Light beige/tan */
+            --accent-color: #343434; /* Dark charcoal for text */
+            --white-color: #FFFFFF;
+            --light-accent: #FFFBF0; /* Very light beige for backgrounds */
+            --danger-color: #e74c3c; /* Red for logout button */
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--accent-color);
+        }
+
+        /* Enhanced Navbar Styles */
+        .main-navbar {
+            background-color: var(--white-color);
+            color: var(--accent-color);
+            padding: 15px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            z-index: 1000;
+            position: sticky;
+            top: 0;
+            width: 100%;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .main-navbar .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Enhanced Navbar Brand */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--accent-color);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: translateY(-2px);
+        }
+
+        .navbar-brand .logo {
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            padding: 5px;
+            background-color: var(--white-color);
+            transition: all 0.3s ease;
+            
+        }
+
+        .navbar-brand:hover .logo {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 10px rgba(246, 197, 36, 0.3);
+        }
+
+        .navbar-brand .site-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8em;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--accent-color);
+            position: relative;
+        }
+
+        .navbar-brand .site-name::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .navbar-brand:hover .site-name::after {
+            width: 100%;
+        }
+
+        /* Enhanced User Info Section */
+        .navbar-user-info {
+            display: none; /* Hidden by default, shown by JS if logged in */
+            align-items: center;
+            gap: 20px;
+            font-size: 0.95em;
+            background-color: var(--light-accent);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(219, 210, 183, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-user-info:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transform: translateY(-2px);
+        }
+
+        .navbar-user-info #logged-in-user-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            color: var(--accent-color);
+            font-size: 1.1em;
+        }
+
+        .navbar-user-info .user-role-badge {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            text-transform: capitalize;
+            color: var(--white-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .user-role-badge.admin { 
+            background-color: var(--danger-color); 
+        }
+        
+        .user-role-badge.organizer { 
+            background-color: #28a745; 
+        }
+        
+        .user-role-badge.vendor { 
+            background-color: #007bff; 
+        }
+
+        .user-role-badge:hover {
+            transform: scale(1.05);
+        }
+
+        /* Enhanced Logout Button */
+        .btn-danger-outline {
+            background-color: transparent;
+            color: var(--danger-color);
+            border: 2px solid var(--danger-color);
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-danger-outline:hover {
+            background-color: var(--danger-color);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .btn-danger-outline i {
+            margin-right: 5px;
+        }
+
+        /* Enhanced Global Message Display */
+        #global-message-display {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 600px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 500;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            animation: slideInDown 0.5s ease-out;
+            z-index: 1001;
+        }
+
+        #global-message-display.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        #global-message-display.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @keyframes slideInDown {
+            from { 
+                transform: translateX(-50%) translateY(-100%); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateX(-50%) translateY(0); 
+                opacity: 1; 
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-navbar .container {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .navbar-brand .logo {
+                height: 40px;
+            }
+            
+            .navbar-brand .site-name {
+                font-size: 1.5em;
+            }
+            
+            .navbar-user-info {
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 10px;
+                padding: 12px 15px;
+                border-radius: 10px;
+            }
+            
+            #global-message-display {
+                width: 80%;
+                bottom: -50px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+     
+<nav class="main-navbar">
+    <div class="container">
+        <a href="/" class="navbar-brand">
+            <span class="site-name">Event Planner</span>
+        </a>
+
+        <div class="navbar-user-info" id="navbar-user-info">
+            <!-- User info and Logout button will be dynamically loaded/updated by JS -->
+            <span id="logged-in-user-name" style="font-weight: bold;"></span>
+            <span id="logged-in-user-role" class="user-role-badge"></span>
+            <button style="color: black;" id="logout-button" class="btn btn-danger-outline"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+        
+        <!-- Placeholder for global messages (e.g., success/error banners) -->
+        <div id="global-message-display" class="global-message" style="display: none;"></div>
+    </div>
+</nav>
+
+<script>
+    // Utility function to decode JWT (add this if not in main.js)
+    function decodeJwt(token) {
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        } catch (error) {
+            console.error('Error decoding JWT:', error);
+            return null;
+        }
+    }
+
+    // This script block is specific to the navbar partial to display user info and handle logout.
+    // It runs only when the navbar partial is loaded into the DOM.
+    document.addEventListener('DOMContentLoaded', () => {
+        const userInfoContainer = document.getElementById('navbar-user-info');
+        const userNameSpan = document.getElementById('logged-in-user-name');
+        const userRoleSpan = document.getElementById('logged-in-user-role');
+        const logoutButton = document.getElementById('logout-button');
+        const navbarBrand = document.querySelector('.navbar-brand');
+
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decodedToken = decodeJwt(token); // `decodeJwt` is from main.js
+            if (decodedToken) {
+                // Fetch user full name from backend for robustness (or store in token if safe)
+                // For simplicity here, we'll use a placeholder or assume full name is in token.
+                // Best practice: Store minimal info in JWT, fetch profile for full details.
+                const userName = decodedToken.fullName || decodedToken.email.split('@')[0]; // Fallback
+                const userRole = decodedToken.role.charAt(0).toUpperCase() + decodedToken.role.slice(1);
+
+                userNameSpan.textContent = `Welcome, ${userName}!`;
+                userRoleSpan.textContent = userRole;
+                userRoleSpan.className = `user-role-badge ${decodedToken.role}`; // Add role class for styling
+                userInfoContainer.style.display = 'flex'; // Show user info
+
+                // Update navbar brand link to point to role-specific dashboard
+                switch (decodedToken.role) {
+                    case 'organizer':
+                        navbarBrand.href = '/organizer/dashboard.html';
+                        break;
+                    case 'vendor':
+                        navbarBrand.href = '/vendor/dashboard.html';
+                        break;
+                    case 'admin':
+                        navbarBrand.href = '/admin/dashboard.html';
+                        break;
+                    default:
+                        navbarBrand.href = '/'; // Default to landing page
+                        break;
+                }
+
+            } else {
+                console.error("Invalid token found in localStorage.");
+                localStorage.removeItem('token'); // Clear invalid token
+                userInfoContainer.style.display = 'none';
+                navbarBrand.href = '/';
+            }
+        } else {
+            userInfoContainer.style.display = 'none'; // Hide user info if not logged in
+            navbarBrand.href = '/';
+        }
+
+        if (logoutButton) {
+            logoutButton.addEventListener('click', () => {
+                localStorage.removeItem('token');
+                window.location.href = '/auth/login.html'; // Redirect to login page
+            });
+        }
+    });
+</script>
+
+</body>
+</html>
